@@ -16,6 +16,8 @@ import java.util.zip.GZIPOutputStream
 
 object Conf {
   val nbCustomers = 10
+  val startDate = "2016-01-01"
+  val endDate = "2020-12-01"
 }
 
 object MyRandom {
@@ -199,12 +201,12 @@ object GenerateSaaSDataset extends App {
   
   
   val customerCSV = new PrintWriter(new GZIPOutputStream(new FileOutputStream("customer.csv.gz")))
-  customerCSV.println("id, name, acquisitionChannel, persona")
+  //customerCSV.println("id, name, acquisitionChannel, persona")
       
   val lifetimeCSV = new PrintWriter(new GZIPOutputStream(new FileOutputStream("lifetime.csv.gz")))
-  customerCSV.println("customerId, date, mrr")
+  //customerCSV.println("customerId, date, mrr")
     
-  generateDataset(Conf.nbCustomers, LocalDate.parse("2016-01-01"), LocalDate.parse("2018-12-01"))
+  generateDataset(Conf.nbCustomers, LocalDate.parse(Conf.startDate), LocalDate.parse(Conf.endDate))
     
   customerCSV.close()
   lifetimeCSV.close()
