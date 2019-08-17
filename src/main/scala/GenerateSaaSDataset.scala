@@ -13,6 +13,15 @@ import java.io._
 import java.util.zip.GZIPOutputStream
 
 
+
+object Conf {
+  val nbCustomers = 10
+}
+
+
+
+
+
 object Customer {
   private var id = 1L
   
@@ -189,7 +198,7 @@ object GenerateSaaSDataset extends App {
   val lifetimeCSV = new PrintWriter(new GZIPOutputStream(new FileOutputStream("lifetime.csv.gz")))
   customerCSV.println("customerId, date, mrr")
     
-  generateDataset(10, LocalDate.parse("2016-01-01"), LocalDate.parse("2018-12-01"))
+  generateDataset(Conf.nbCustomers, LocalDate.parse("2016-01-01"), LocalDate.parse("2018-12-01"))
     
   customerCSV.close()
   lifetimeCSV.close()
