@@ -18,6 +18,15 @@ object Conf {
   val nbCustomers = 10
 }
 
+object MyRandom {
+  private val r = new java.util.Random(123456789L)
+
+  def random(): Double = r.nextDouble()
+  def random(min: Int, max: Int): Int = (r.nextDouble()*(max-min)+min).toInt
+  def random(min: Double, max: Double): Double = r.nextDouble()*(max-min)+min
+
+}
+
 
 
 
@@ -53,9 +62,7 @@ abstract class Distribution(distrib: Seq[Double]) {
   def distribution = distrib
   def length = distribution.length
   def get = distribution
-  
-  def par = distrib
-  
+    
   def normalize: Distribution = {
     normalize(1)
   }
@@ -113,8 +120,7 @@ case class LinearDistribution(_length: Int) extends Distribution({
 })
 
 case class RandomDistribution(_length: Int, min: Double, max: Double) extends Distribution({
-  val range = max - min
-  for(i <- 0 to _length) yield Math.random()*range + min
+  for(i <- 0 to _length) yield MyRandom.random(min, max)
 })
 
 case class StableDistribution(_length: Int, value: Double) extends Distribution({
@@ -160,9 +166,9 @@ object PersonaSME {
   def getSmeId = { smeId = smeId + 1; smeId}
   val churnProbability = GivenFirstNumbersDistribution(100, 0.5, 0.3, 0.1, 0.2, 0.005) 
   
-  def acquisitionChannel = if(Math.random() < 0.8) "Sales" else "Organic" 
+  def acquisitionChannel = if(MyRandom.random() < 0.8) "Sales" else "Organic" 
   
-  def mrrEvolution = (StableDistribution(100, 50.0*(Math.random()+0.5)) + LinearDistribution(100))
+  def mrrEvolution = (StableDistribution(100, 50.0*(MyRandom.random()+0.5)) + LinearDistribution(100))
 }
 
 object PersonaCorporate {  
@@ -171,9 +177,9 @@ object PersonaCorporate {
   def getCorporateId = { corporateId = corporateId + 1; corporateId}
   val churnProbability = GivenFirstNumbersDistribution(100, 0.1, 0.1, 0.1, 0.2, 0.005, 0.005, 0.5, 0.005) 
   
-  def acquisitionChannel = if(Math.random() < 0.95) "Sales" else "Organic" 
+  def acquisitionChannel = if(MyRandom.random() < 0.95) "Sales" else "Organic" 
   
-  def mrrEvolution = GivenFirstNumbersDistribution(100, 50.0, 50.0, 50.0, 50.0, 50.0, 50.0, 50.0, 500.0, 1000.0)*(Math.random()+0.5)
+  def mrrEvolution = GivenFirstNumbersDistribution(100, 50.0, 50.0, 50.0, 50.0, 50.0, 50.0, 50.0, 500.0, 1000.0)*(MyRandom.random()+0.5)
 }
 
 object PersonaStartup {  
@@ -182,9 +188,9 @@ object PersonaStartup {
   def getStartupId = { startupId = startupId + 1; startupId}
   val churnProbability = GivenFirstNumbersDistribution(100, 0.5, 0.5, 0.5, 0.1, 0.01) 
   
-  def acquisitionChannel = if(Math.random() < 0.05) "Sales" else "Organic" 
+  def acquisitionChannel = if(MyRandom.random() < 0.05) "Sales" else "Organic" 
   
-  def mrrEvolution = (LinearDistribution(100)*5+20)*(Math.random()+0.5)
+  def mrrEvolution = (LinearDistribution(100)*5+20)*(MyRandom.random()+0.5)
 }
 
 
@@ -230,7 +236,7 @@ object GenerateSaaSDataset extends App {
     val life = for(i <- 0 until maxDuration if alive) yield {
       val date = if(i == 0) startDate else startDate.plus(i, ChronoUnit.MONTHS)
       val l = 
-      if(Math.random() < churnProbability(i)) 
+      if(MyRandom.random() < churnProbability(i)) 
         alive = false 
         
       CustomerMonth(customer.id, date, mrrDistribution(i))
