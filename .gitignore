@@ -43,3 +43,5 @@ secret.conf
 /.bloop
 /.metals
 /project/.bloop
+
+*.csv.gz
