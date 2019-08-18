@@ -17,17 +17,18 @@ with lifetime_ext_1 as (
 lifetime_ext_2 as (  
   select *,
     -- Get the previous month MRR if any
-    case when prev_period = DATE_ADD(period, INTERVAL -1 MONTH)
+    case when prev_period = period - interval'1 month'
         then lag(mrr, 1) 
             over (partition by customer_id order by period asc) end 
               as prev_mrr,
     -- Get the next month MRR if any
-    case when next_period = DATE_ADD(period, INTERVAL +1 MONTH)
+    case when next_period = period + interval'1 month'
         then lead(mrr, 1) 
              over (partition by customer_id order by period asc) end 
                as next_mrr,
     -- Nomber of month from cohort up to this period
-    period_diff(date_format(period, '%Y%m'), date_format(cohort, '%Y%m')) as life_month
+    extract(year from age(period, cohort))::int*12
+      + extract(month from age(period, cohort))::int as life_month
   from lifetime_ext_1
 ),
 -- Active customers rows
@@ -57,7 +58,7 @@ active as (
 ),
 -- Churning customers rows (one period after their last presence)
 churners as (
-  select customer_id, DATE_ADD(period, INTERVAL +1 MONTH) as period, 
+  select customer_id, (period + interval'1 month')::date as period, 
     cohort, 
     life_month+1 as life_month,
     0 as customer_count, 0 as new_customer, 
